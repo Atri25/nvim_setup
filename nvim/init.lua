@@ -306,9 +306,13 @@ vim.keymap.set("v", ">", ">gv", { desc = "Indent right and reselect" })
 vim.keymap.set("n", "J", "mzJ`z", { desc = "Join lines and keep cursor position" })
 
 vim.keymap.set("n", "<leader>pa", function() -- show file path
-	local path = vim.fn.expand("%:p")
-	vim.fn.setreg("+", path)
-	print("file:", path)
+
+-- vim.keymap.set("n", "<S-l>", "<cmd>BufferLineCycleNext<CR>", { silent = true })
+-- vim.keymap.set('n', "<S-h>", '<cmd>BufferLineCyclePrev<CR>', { silent = true })
+
+local path = vim.fn.expand("%:p")
+vim.fn.setreg("+", path)
+print("file:", path)
 end, { desc = "Copy full file path" })
 
 vim.keymap.set("n", "<leader>td", function()
@@ -461,7 +465,8 @@ vim.pack.add({
 		version = vim.version.range("1.*"),
 	},
 	"https://github.com/L3MON4D3/LuaSnip",
-
+  "https://github.com/akinsho/bufferline.nvim", --bufferline  
+  "https://github.com/CRAG666/code_runner.nvim",
 })
 
 -- Target path where native optional packages are stored
@@ -492,6 +497,14 @@ require('neoclip').setup({
 -- PLUGINS CONFIG
 -- ============================================================================
 
+-- Initialize and configure the buffer line UI
+
+require("bufferline").setup({
+  options = {
+    mode = "buffers", -- Ensures your open buffers act like tabs
+    diagnostics = "nvim_lsp", -- Optional: highlights files with LSP errors
+  }
+})
 
 local setup_treesitter = function()
 	local treesitter = require("nvim-treesitter")
@@ -586,6 +599,46 @@ vim.keymap.set("n", "<leader>fX", function()
 	require("fzf-lua").diagnostics_workspace()
 end, { desc = "FZF Diagnostics Workspace" })
 
+
+vim.keymap.set("n", "<S-l>", "<cmd>BufferLineCycleNext<CR>", { silent = true })
+vim.keymap.set('n', "<S-h>", '<cmd>BufferLineCyclePrev<CR>', { silent = true })
+
+vim.keymap.set('n', '<C-q>', ':bdelete<CR>', { desc = 'Close current buffer' })
+
+require('code_runner').setup({
+  filetype = {
+    java = {
+      "cd $dir &&",
+      "javac $fileName &&",
+      "java $fileNameWithoutExt"
+    },
+    python = "python3 -u",
+    typescript = "deno run",
+    rust = {
+      "cd $dir &&",
+      "rustc $fileName &&",
+      "$dir/$fileNameWithoutExt"
+    },
+    cpp = "cd $dir && g++ $fileName -o $fileNameWithoutExt && ./$fileNameWithoutExt",
+    c = "cd $dir && gcc $fileName -o $fileNameWithoutExt && ./$fileNameWithoutExt",    
+  },
+-- Focuses the terminal and enters insert mode immediately
+  startinsert = true,
+  term = {
+    -- Options: "vertical", "horizontal", "tab", "float"
+    mode = "horizontal", 
+    -- Size of the split window (height for horizontal, width for vertical)
+    size = 12,
+  },
+})
+
+-- vim.keymap.set('n', '<C-r>', ':RunCode<CR>', { noremap = true, silent = false })
+vim.keymap.set('n', '<C-r>', ':RunFile<CR>', { noremap = true, silent = false })
+vim.keymap.set('n', '<leader>rft', ':RunFile tab<CR>', { noremap = true, silent = false })
+vim.keymap.set('n', '<leader>rp', ':RunProject<CR>', { noremap = true, silent = false })
+vim.keymap.set('n', '<leader>rc', ':RunClose<CR>', { noremap = true, silent = false })
+vim.keymap.set('n', '<leader>crf', ':CRFiletype<CR>', { noremap = true, silent = false })
+vim.keymap.set('n', '<leader>crp', ':CRProjects<CR>', { noremap = true, silent = false })
 
 require("mini.ai").setup({})
 require("mini.comment").setup({})
