@@ -612,6 +612,14 @@ require('code_runner').setup({
   },
 })
 
+
+vim.api.nvim_create_autocmd("TermClose", {
+  callback = function()
+    -- Prevents the window from closing automatically on keypress
+    vim.cmd("stopinsert")
+  end,
+})
+
 -- vim.keymap.set('n', '<C-r>', ':RunCode<CR>', { noremap = true, silent = false })
 vim.keymap.set('n', '<leader>r', ':RunFile<CR>', { noremap = true, silent = false })
 vim.keymap.set('n', '<leader>rft', ':RunFile tab<CR>', { noremap = true, silent = false })
