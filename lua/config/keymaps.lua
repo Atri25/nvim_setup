@@ -50,6 +50,13 @@ vim.keymap.set("v", ">", ">gv", { desc = "Indent right and reselect" })
 
 vim.keymap.set("n", "J", "mzJ`z", { desc = "Join lines and keep cursor position" })
 
+-- Navigate tabs (Next and Previous)
+vim.keymap.set("n", "<S-h>", "<cmd>BufferLineCycleNext<cr>", { desc = "Next Tab" })
+vim.keymap.set("n", "<S-l>", "<cmd>BufferLineCyclePrev<cr>", { desc = "Prev Tab" })
+
+-- Close the current buffer/tab
+vim.keymap.set("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Close Current Tab" })
+vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP Code Action" })
 vim.keymap.set("n", "<leader>pa", function()
 	local path = vim.fn.expand("%:p")
 	vim.fn.setreg("+", path)

@@ -31,16 +31,27 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 -- format on save using efm langserver and configured formatters
-local lsp_fmt_group = vim.api.nvim_create_augroup("FormatOnSaveGroup", {})
+local lsp_fmt_group = vim.api.nvim_create_augroup("FormatOnSaveGroup", { clear = true })
+
 vim.api.nvim_create_autocmd("BufWritePre", {
 	group = lsp_fmt_group,
 	callback = function()
-		require("mini.trailspace").trim()
-		local efm = vim.lsp.get_clients({ name = "efm" })
-		if vim.tbl_isempty(efm) then
+		-- Trim trailing whitespace safely
+		if vim.fn.exists(":MiniTrailspace") == 2 then
+			require("mini.trailspace").trim()
+		end
+
+		-- Check if efm is attached to the current buffer (bufnr = 0)
+		local clients = vim.lsp.get_clients({ bufnr = 0, name = "efm" })
+		if vim.tbl_isempty(clients) then
 			return
 		end
-		vim.lsp.buf.format({ name = "efm", async = true })
+
+		-- Must be async = false for BufWritePre to save formatted text
+		vim.lsp.buf.format({
+			name = "efm",
+			async = false,
+		})
 	end,
 })
 

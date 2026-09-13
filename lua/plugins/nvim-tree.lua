@@ -16,6 +16,14 @@ return {
 			view = {
 				adaptive_size = true,
 			},
+      window = {
+        -- Prevents neo-tree from grabbing focus when a buffer closes
+        auto_expand_width = false, 
+      },
+      filesystem = {
+        -- Ensures neo-tree doesn't try to take over the empty window space
+        hijack_netrw_behavior = "open_default", 
+      }
 		})
 	end,
 }

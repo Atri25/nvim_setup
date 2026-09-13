@@ -43,6 +43,9 @@ return {
 				end,
 			},
 
+      completion = {
+        completeopt = 'menu,menuone,select',
+      },
 			formatting = {
 				format = lspkind.cmp_format({
 					mode = "symbol_text",
@@ -63,8 +66,37 @@ return {
 				["<C-f>"] = cmp.mapping.scroll_docs(4),
 				["<C-Space>"] = cmp.mapping.complete(),
 				["<C-e>"] = cmp.mapping.abort(),
-				["<CR>"] = cmp.mapping.confirm({ select = false }),
-			}),
+        ['<Tab>'] = cmp.mapping(function(fallback)
+              if cmp.visible() then
+                -- Confirms the automatically selected first item
+                cmp.confirm({ select = true })
+              elseif luasnip.expand_or_locally_jumpable() then
+                luasnip.expand_or_jump()
+              else
+                fallback()
+              end
+            end, { 'i', 's' }),
+
+            -- Use Shift+Tab to manually navigate items if you change your mind
+            ['<S-Tab>'] = cmp.mapping(function(fallback)
+              if cmp.visible() then
+                cmp.select_next_item()
+              elseif luasnip.locally_jumpable(-1) then
+                luasnip.jump(-1)
+              else
+                fallback()
+              end
+            end, { 'i', 's' }),
+
+        ['<CR>'] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            -- select = true will confirm the current selection or the first item
+            cmp.confirm({ select = true })
+          else
+            fallback()
+          end
+        end, { 'i', 's' }),
+       }),
 
 			sources = {
 				{ name = "codeium" },
